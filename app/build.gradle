@@ -1,3 +1,6 @@
+import com.android.build.gradle.AppPlugin
+import proguard.gradle.ProGuardTask
+
 apply plugin: 'com.android.library'
 
 android {
@@ -11,8 +14,58 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    // 构建jar
+    task jarBuild(dependsOn: ['compileReleaseJavaWithJavac'], type: Jar) {
+        baseName = "JHSdk"
+        appendix = ""
+        version = defaultConfig.versionName
+        classifier = "release"
+        extension = "jar"
+        // 最终的jar包名, 如果没设置, 默认为[baseName]-[appendix]-[version]-[classifier].[extension]
+        archiveName = "JHSdk_" + defaultConfig.versionName + ".jar"
+        // 需打包的资源所在的路径集
+        def srcClassDir = [project.buildDir.absolutePath + "/intermediates/classes/release"];
+        // 初始化资源路径集
+        from srcClassDir
+        // 去除路径集下部分的资源(注:exclude\include支持可变长参数)
+        exclude "com/jaronho/sdk/BuildConfig.class"
+        exclude "com/jaronho/sdk/BuildConfig\$*.class"
+        exclude "**/R.class"
+        exclude "**/R\$*.class"
+        // 只导入资源路径集下的部分资源
+        include "com/**/*.class"
+    }
+    // 混淆jar
+    task jarProguard(dependsOn: ['jarBuild'], type: ProGuardTask) {
+        // Android 默认的proguard文件
+        configuration android.getDefaultProguardFile('proguard-android.txt')
+        // 会根据该文件对jar进行混淆,注意:需要在manifest注册的组件也要加入该文件中
+        configuration 'proguard-rules.pro'
+        String inJar = jarBuild.archivePath.getAbsolutePath()
+        // 输入jar
+        injars inJar
+        // 输出jar
+        outjars inJar.substring(0, inJar.lastIndexOf(File.separator)) + "/JHSdk_${defaultConfig.versionName}_proguard.jar"
+        // 设置不删除未引用的资源(类,方法等)
+        dontshrink
+        AppPlugin appPlugin = getPlugins().findPlugin(AppPlugin)
+        if (null != appPlugin) {
+            List<String> runtimeJarList
+            if (appPlugin.getMetaClass().getMetaMethod("getRuntimeJarList")) {
+                runtimeJarList = appPlugin.getRuntimeJarList()
+            } else if (android.getMetaClass().getMetaMethod("getBootClasspath")) {
+                runtimeJarList = android.getBootClasspath()
+            } else {
+                runtimeJarList = appPlugin.getBootClasspath()
+            }
+            for (String runtimeJar : runtimeJarList) {
+                // 给proguard添加runtime
+                libraryjars(runtimeJar)
+            }
         }
     }
 }
@@ -21,4 +74,3 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:25.2.0'
 }
-
