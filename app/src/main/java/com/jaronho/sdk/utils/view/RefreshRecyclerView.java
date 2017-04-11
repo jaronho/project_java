@@ -22,7 +22,7 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
 
     private boolean mIsHorizontal = false;           // 横向布局
     private float mDragResistance = 0.35f;              // 拖动的阻力指数
-    private int mTouchPos = 0;                           // 触摸的位置
+    private float mTouchPos = 0;                           // 触摸的位置
 
     private Creator mHeadCreator = null;				// 头部刷新视图构造器
     private View mHeadView = null;						// 头部刷新视图
@@ -66,7 +66,7 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // 记录手指按下的位置,之所以写在dispatchTouchEvent那是因为如果我们处理了条目点击事件,那么就不会进入onTouchEvent里面,所以只能在这里获取
-                mTouchPos = (int)(mIsHorizontal ? e.getRawX() : e.getRawY());
+                mTouchPos = mIsHorizontal ? e.getRawX() : e.getRawY();
                 break;
             case MotionEvent.ACTION_UP:
                 if (mIsHeadDrag) {
@@ -84,7 +84,7 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                int distance = (int)((mIsHorizontal ? e.getRawX() : e.getRawY() - mTouchPos) * mDragResistance);  // 获取手指触摸拖拽的距离
+                int distance = (int)(((mIsHorizontal ? e.getRawX() : e.getRawY()) - mTouchPos) * mDragResistance);  // 获取手指触摸拖拽的距离
                 if (isScrollToHead()) {
                     scrollToPosition(0);    // 解决自动滚动问题
                     if (STATUS_REFRESHING == mCurrentHeadStatus) {
@@ -174,7 +174,7 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
             }
             int offset = currentMargin - finalMargin;
             // 回弹到指定位置
-            ValueAnimator animator = ObjectAnimator.ofFloat(currentMargin, finalMargin).setDuration(offset);
+            ValueAnimator animator = ObjectAnimator.ofFloat(currentMargin, finalMargin).setDuration(Math.abs(offset));
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {

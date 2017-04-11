@@ -134,7 +134,7 @@ public class QuickRecyclerView<T> extends RecyclerView {
         }
     }
 
-    public static abstract class MultiItemTypeSupport<T> {
+    public static abstract class MultiItemType<T> {
         public abstract int getLayoutId(int position, T data);
     }
 
@@ -142,7 +142,7 @@ public class QuickRecyclerView<T> extends RecyclerView {
         private Context mContext = null;
         private List<T> mDatas = null;
         private int mLayoutId = 0;
-        private MultiItemTypeSupport<T> mMultiItemTypeSupport = null;
+        private MultiItemType<T> mMultiItemType = null;
 
         public QuickViewAdapter(Context context, List<T> datas, int layoutId) {
             mContext = context;
@@ -150,10 +150,10 @@ public class QuickRecyclerView<T> extends RecyclerView {
             mLayoutId = layoutId;
         }
 
-        public QuickViewAdapter(Context context, List<T> datas, MultiItemTypeSupport<T> multiItemTypeSupport) {
+        public QuickViewAdapter(Context context, List<T> datas, MultiItemType<T> multiItemType) {
             mContext = context;
             mDatas = datas;
-            mMultiItemTypeSupport = multiItemTypeSupport;
+            mMultiItemType = multiItemType;
         }
 
         @Override
@@ -163,15 +163,15 @@ public class QuickRecyclerView<T> extends RecyclerView {
 
         @Override
         public int getItemViewType(int position) {
-            if (null != mMultiItemTypeSupport) {
-                return mMultiItemTypeSupport.getLayoutId(position, mDatas.get(position));
+            if (null != mMultiItemType) {
+                return mMultiItemType.getLayoutId(position, mDatas.get(position));
             }
             return super.getItemViewType(position);
         }
 
         @Override
         public QuickViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
-            if (null != mMultiItemTypeSupport) {
+            if (null != mMultiItemType) {
                 mLayoutId = viewType;
             }
             View itemView = LayoutInflater.from(mContext).inflate(mLayoutId, parent, false);

@@ -61,14 +61,14 @@ public class WrapRecyclerView<T> extends QuickRecyclerView<T> {
         return null;
     }
 
-    // 添加头部
+    // 添加头部(越早添加在越上面)
     public void addHeaderView(View view) {
         if (null != mAdapter) {
             mAdapter.addHeaderView(view);
         }
     }
 
-    // 添加底部
+    // 添加底部(越早添加在越下面)
     public void addFooterView(View view) {
         if (null != mAdapter) {
             mAdapter.addFooterView(view);
@@ -115,8 +115,8 @@ public class WrapRecyclerView<T> extends QuickRecyclerView<T> {
             mFooterViews = new SparseArray<>();
         }
 
-        public WrapViewAdapter(Context context, List<T> datas, MultiItemTypeSupport<T> multiItemTypeSupport) {
-            super(context, datas, multiItemTypeSupport);
+        public WrapViewAdapter(Context context, List<T> datas, MultiItemType<T> multiItemType) {
+            super(context, datas, multiItemType);
             mHeaderViews = new SparseArray<>();
             mFooterViews = new SparseArray<>();
         }
@@ -197,7 +197,7 @@ public class WrapRecyclerView<T> extends QuickRecyclerView<T> {
 
         public void addFooterView(View view) {
             if (null != view && mFooterViews.indexOfValue(view) < 0) {
-                mFooterViews.put(BASE_ITEM_TYPE_FOOTER++, view);
+                mFooterViews.put(BASE_ITEM_TYPE_FOOTER--, view);
             }
         }
 
