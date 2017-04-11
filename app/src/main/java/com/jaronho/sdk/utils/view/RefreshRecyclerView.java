@@ -11,7 +11,7 @@ import android.view.View;
 /**
  * Author:  jaron.ho
  * Date:    2017-04-11
- * Brief:   RefreshRecyclerView
+ * Brief:   RefreshRecyclerView(支持头部和底部拖动更新)
  */
 
 public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
@@ -19,6 +19,9 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
     public static final int STATUS_PULL = 0x02;			// 拖动状态
     public static final int STATUS_LOOSEN = 0x03;		// 松开状态
     public static final int STATUS_REFRESHING = 0x04;	// 刷新状态
+
+    private static final int HEAD_VIEW_KEY = Integer.MIN_VALUE;  // 头部键值
+    private static final int FOOT_VIEW_KEY = Integer.MAX_VALUE;  // 底部键值
 
     private boolean mIsHorizontal = false;           // 横向布局
     private float mDragResistance = 0.35f;              // 拖动的阻力指数
@@ -29,12 +32,14 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
     private int mHeadViewSize = 0;					// 头部刷新视图的大小
     private boolean mIsHeadDrag = false;				// 头部是否正在拖动
     private int mCurrentHeadStatus = STATUS_NORMAL;		// 头部刷新状态
+    private boolean mIsHeadVisible = false;         // 头部是否可见
 
     private Creator mFootCreator = null;				// 底部刷新视图构造器
     private View mFootView = null;						// 底部刷新视图
     private int mFootViewSize = 0;					// 底部刷新视图的大小
     private boolean mIsFootDrag = false;				// 底部是否正在拖动
     private int mCurrentFootStatus = STATUS_NORMAL;		// 底部刷新状态
+    private boolean mIsFootVisible = false;         // 底部是否可见
 
     public RefreshRecyclerView(Context context) {
         super(context);
@@ -141,8 +146,9 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
         if (null != adapter && null != mHeadCreator && null == mHeadView) {
             View headView = mHeadCreator.getView(getContext(), this);
             if (null != headView) {
-                addHeaderView(headView);
+                addHeaderView(HEAD_VIEW_KEY, headView);
                 mHeadView = headView;
+                mIsHeadVisible = true;
             }
         }
     }
@@ -153,8 +159,9 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
         if (null != adapter && null != mFootCreator && null == mFootView) {
             View footView = mFootCreator.getView(getContext(), this);
             if (null != footView) {
-                addFooterView(footView);
+                addFooterView(FOOT_VIEW_KEY, footView);
                 mFootView = footView;
+                mIsFootVisible = true;
             }
         }
     }
@@ -190,7 +197,7 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
     // 重置当前底部刷新状态
     private void restoreFootView() {
         if (null != mFootView) {
-            MarginLayoutParams layoutParams = (MarginLayoutParams)mHeadView.getLayoutParams();
+            MarginLayoutParams layoutParams = (MarginLayoutParams)mFootView.getLayoutParams();
             int currentMargin = mIsHorizontal ? layoutParams.rightMargin : layoutParams.bottomMargin;
             int finalMargin = 0;
             if (STATUS_LOOSEN == mCurrentFootStatus) {
@@ -330,8 +337,32 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
         }
     }
 
+    // 设置头部是否可见
+    public void setHeadVisible(boolean visible) {
+        if (null != mHeadView && visible != mIsHeadVisible) {
+            if (visible) {
+                addHeaderView(HEAD_VIEW_KEY, mHeadView);
+            } else {
+                removeHeaderView(HEAD_VIEW_KEY);
+            }
+            mIsHeadVisible = visible;
+        }
+    }
+
+    // 设置底部是否可见
+    public void setFootVisible(boolean visible) {
+        if (null != mFootView && visible != mIsFootVisible) {
+            if (visible) {
+                addFooterView(FOOT_VIEW_KEY, mFootView);
+            } else {
+                removeFooterView(FOOT_VIEW_KEY);
+            }
+            mIsFootVisible = visible;
+        }
+    }
+
     public static abstract class Creator {
-        // 获取刷新的View
+        // 获取刷新视图
         public abstract View getView(Context context, RefreshRecyclerView parent);
 
         /**
