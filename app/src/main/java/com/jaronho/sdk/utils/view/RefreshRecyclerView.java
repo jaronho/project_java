@@ -32,14 +32,12 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
     private int mHeadViewSize = 0;					// 头部刷新视图的大小
     private boolean mIsHeadDrag = false;				// 头部是否正在拖动
     private int mCurrentHeadStatus = STATUS_NORMAL;		// 头部刷新状态
-    private boolean mIsHeadVisible = false;         // 头部是否可见
 
     private Creator mFootCreator = null;				// 底部刷新视图构造器
     private View mFootView = null;						// 底部刷新视图
     private int mFootViewSize = 0;					// 底部刷新视图的大小
     private boolean mIsFootDrag = false;				// 底部是否正在拖动
     private int mCurrentFootStatus = STATUS_NORMAL;		// 底部刷新状态
-    private boolean mIsFootVisible = false;         // 底部是否可见
 
     public RefreshRecyclerView(Context context) {
         super(context);
@@ -148,7 +146,6 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
             if (null != headView) {
                 addHeaderView(HEAD_VIEW_KEY, headView);
                 mHeadView = headView;
-                mIsHeadVisible = true;
             }
         }
     }
@@ -161,7 +158,6 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
             if (null != footView) {
                 addFooterView(FOOT_VIEW_KEY, footView);
                 mFootView = footView;
-                mIsFootVisible = true;
             }
         }
     }
@@ -334,30 +330,6 @@ public class RefreshRecyclerView<T> extends WrapRecyclerView<T> {
         restoreFootView();
         if (null != mFootCreator) {
             mFootCreator.onStopRefresh();
-        }
-    }
-
-    // 设置头部是否可见
-    public void setHeadVisible(boolean visible) {
-        if (null != mHeadView && visible != mIsHeadVisible) {
-            if (visible) {
-                addHeaderView(HEAD_VIEW_KEY, mHeadView);
-            } else {
-                removeHeaderView(HEAD_VIEW_KEY);
-            }
-            mIsHeadVisible = visible;
-        }
-    }
-
-    // 设置底部是否可见
-    public void setFootVisible(boolean visible) {
-        if (null != mFootView && visible != mIsFootVisible) {
-            if (visible) {
-                addFooterView(FOOT_VIEW_KEY, mFootView);
-            } else {
-                removeFooterView(FOOT_VIEW_KEY);
-            }
-            mIsFootVisible = visible;
         }
     }
 
