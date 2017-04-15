@@ -15,7 +15,7 @@ public class MediaTypeUtil {
      */
     public static MediaType fetchFileMediaType(String url) {
         if (!TextUtils.isEmpty(url) && url.contains(".")) {
-            String extension = url.substring(url.lastIndexOf(".") + 1);
+            String extension = url.substring(url.lastIndexOf(".") + 1).toLowerCase();
             if ("png".equals(extension)) {
                 extension = "image/png";
             } else if ("jpg".equals(extension)) {

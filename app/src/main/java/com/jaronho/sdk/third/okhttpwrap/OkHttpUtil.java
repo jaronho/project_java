@@ -417,7 +417,7 @@ public class OkHttpUtil {
             // 系统默认配置
             initDefaultConfig();
             if (!isGlobal && null != builderGlobal) {
-                //全局自定义配置
+                // 全局自定义配置
                 initGlobalConfig(builderGlobal);
             }
         }
