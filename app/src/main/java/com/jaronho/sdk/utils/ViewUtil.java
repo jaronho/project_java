@@ -3,17 +3,32 @@ package com.jaronho.sdk.utils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
+import android.provider.Browser;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jaronho.sdk.library.timer.Timer;
 import com.jaronho.sdk.library.timer.TimerManager;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Author:  jaron.ho
@@ -202,5 +217,75 @@ public final class ViewUtil {
         if (null != context) {
             showToast(context, context.getString(resId));
         }
+    }
+
+    /**
+     * 功  能: 设置链接跳转与高亮样式
+     * 参  数: url - 链接
+     *         color - 链接颜色
+     *         underline - 是否显示下划线
+     * 返回值: ClickableSpan
+     */
+    private static ClickableSpan createClickableSpan(final String url, final int color, final boolean underline) {
+        return new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                Uri uri = Uri.parse(url);
+                Context context = widget.getContext();
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+                context.startActivity(intent);
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                ds.setColor(color);
+                ds.setUnderlineText(underline);
+            }
+        };
+    }
+
+    /**
+     * 功  能: 让TextView自动解析URL并高亮设置点击链接(链接不支持中文)
+     * 参  数: tv - 文本控件
+     *         content - 内容
+     * 返回值: TextView
+     */
+    public static TextView setTextViewContent(TextView tv, String content) {
+        SpannableStringBuilder sp = new SpannableStringBuilder(content);
+        // 又碰上一个坑,Android居然还不支持POSIX字符,在Android中的\p{Alnum}和Java中的\p{Alnum}不是同一个值,非得要换成[a-zA-Z0-9]才行
+        Pattern pattern = Pattern.compile("(http|https|ftp|svn)://([a-zA-Z0-9]+[/?.?])" + "+[a-zA-Z0-9]*\\??([a-zA-Z0-9]*=[a-zA-Z0-9]*&?)*");
+        Matcher matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            String url = matcher.group();
+            int start = content.indexOf(url);
+            if (start >= 0) {
+                int end = start + url.length();
+                sp.setSpan(new URLSpan(url), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sp.setSpan(createClickableSpan(url, Color.BLUE, false), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
+        tv.setText(sp);
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+        return tv;
+    }
+
+    /**
+     * 功  能: 处理html数据的高亮与响应
+     * 参  数: tv - 文本控件
+     *         content - 内容
+     * 返回值: TextView
+     */
+    public static TextView setTextViewHtml(TextView tv, String content) {
+        SpannableStringBuilder sp = new SpannableStringBuilder(Html.fromHtml(content));
+        URLSpan[] urlSpans = sp.getSpans(0, sp.length(), URLSpan.class);
+        for (final URLSpan span : urlSpans) {
+            int start = sp.getSpanStart(span);
+            int end = sp.getSpanEnd(span);
+            sp.setSpan(createClickableSpan(span.getURL(), Color.BLUE, false), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        tv.setText(sp);
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+        return tv;
     }
 }
