@@ -51,11 +51,12 @@ import okhttp3.Response;
  */
 
 public class OkHttpUtil {
-    private final String TAG = getClass().getSimpleName();
+    private static final String TAG = OkHttpUtil.class.getSimpleName();
     private static Application application;
     private static Builder builderGlobal;
     private static OkHttpClient httpClient;
     private static ExecutorService executorService;
+    private static String logTag;
     private Builder builder;
     private int cacheSurvivalTime;  // 缓存存活时间(秒)
     private int cacheType;  // 缓存类型
@@ -63,11 +64,17 @@ public class OkHttpUtil {
     /**
      * 初始化：请在Application中调用
      * @param context 上下文
+     * @param tag 日志标签
      */
-    public static Builder init(Application context) {
+    public static Builder init(Application context, String tag) {
         application = context;
         application.registerActivityLifecycleCallbacks(new BaseActivityLifecycleCallbacks());
+        logTag = tag.isEmpty() ? TAG : tag;
         return BuilderGlobal();
+    }
+
+    public static Builder init(Application context) {
+        return init(context, TAG);
     }
 
     /**
@@ -355,7 +362,7 @@ public class OkHttpUtil {
         helperInfo.setClientBuilder(newBuilderFromCopy());
         helperInfo.setOkHttpUtil(this);
         helperInfo.setDefault(builder.isDefault);
-        helperInfo.setLogTAG(TAG);
+        helperInfo.setLogTAG(logTag);
         return helperInfo;
     }
 
