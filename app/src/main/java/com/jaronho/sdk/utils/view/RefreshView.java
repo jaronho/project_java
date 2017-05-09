@@ -29,8 +29,6 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
     private View mFooterView = null;
     private int mHeaderViewSize = 0;
     private int mFooterViewSize = 0;
-    private float mHeaderOffset = 0;
-    private float mFooterOffset = 0;
 
     public RefreshView(Context context) {
         super(context);
@@ -93,30 +91,26 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
     }
 
     @Override
-    public void onDrag(float offset) {
+    public void onDrag(float maxOffset, float offset, boolean isForward) {
         if (mIsDragRight) {
             setHeaderMargin(-mHeaderViewSize + (int)offset);
-            if (null != mHeaderWrapper && offset != mHeaderOffset) {
-                mHeaderWrapper.onPull(offset, offset > mHeaderOffset, offset >= mHeaderViewSize);
-                mHeaderOffset = offset;
+            if (null != mHeaderWrapper) {
+                mHeaderWrapper.onPull(maxOffset, offset, isForward, offset >= mHeaderViewSize);
             }
         } else if (mIsDragLeft) {
             setFooterMargin(-mFooterViewSize + (int)offset);
-            if (null != mFooterWrapper && offset != mFooterOffset) {
-                mFooterWrapper.onPull(offset, offset > mFooterOffset, offset >= mFooterViewSize);
-                mFooterOffset = offset;
+            if (null != mFooterWrapper) {
+                mFooterWrapper.onPull(maxOffset, offset, isForward, offset >= mFooterViewSize);
             }
         } else if (mIsDragBottom) {
             setHeaderMargin(-mHeaderViewSize + (int)offset);
-            if (null != mHeaderWrapper && offset != mHeaderOffset) {
-                mHeaderWrapper.onPull(offset, offset > mHeaderOffset, offset >= mHeaderViewSize);
-                mHeaderOffset = offset;
+            if (null != mHeaderWrapper) {
+                mHeaderWrapper.onPull(maxOffset, offset,  isForward, offset >= mHeaderViewSize);
             }
         } else if (mIsDragTop) {
             setFooterMargin(-mFooterViewSize + (int)offset);
-            if (null != mFooterWrapper && offset != mFooterOffset) {
-                mFooterWrapper.onPull(offset, offset > mFooterOffset, offset >= mFooterViewSize);
-                mFooterOffset = offset;
+            if (null != mFooterWrapper) {
+                mFooterWrapper.onPull(maxOffset, offset, isForward, offset >= mFooterViewSize);
             }
         }
     }
@@ -165,7 +159,6 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
             restore();
         }
         mIsDragRight = mIsDragLeft = mIsDragBottom = mIsDragTop = false;
-        mHeaderOffset = mFooterOffset = 0;
     }
 
     // 初始化
@@ -177,6 +170,32 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
         addView(mViewLayout);
         mView = new RecyclerView(getContext());
         mView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (mViewLayout.isHorizontal()) {
+                    if (!recyclerView.canScrollHorizontally(-1)) {
+                        if (null != mHeaderWrapper) {
+                            mHeaderWrapper.onPullReady();
+                        }
+                    } else if (recyclerView.canScrollHorizontally(1)) {
+                        if (null != mFooterWrapper) {
+                            mFooterWrapper.onPullReady();
+                        }
+                    }
+                } else {
+                    if (!recyclerView.canScrollVertically(-1)) {
+                        if (null != mHeaderWrapper) {
+                            mHeaderWrapper.onPullReady();
+                        }
+                    } else if (recyclerView.canScrollVertically(1)) {
+                        if (null != mFooterWrapper) {
+                            mFooterWrapper.onPullReady();
+                        }
+                    }
+                }
+            }
+        });
         mViewLayout.addView(mView);
         // 页眉
         mHeader = new RelativeLayout(getContext());
@@ -313,13 +332,21 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
         View createView(Context context, RelativeLayout parent);
 
         /**
+         * 功  能: 可准备滑动
+         * 参  数: 无
+         * 返回值: 无
+         */
+        void onPullReady();
+
+        /**
          * 功  能: 在滑动中
-         * 参  数: offset - 当前偏移
+         * 参  数: maxOffset - 最大偏移值
+         *         offset - 当前偏移
          *         isForward - 是否向前,例:当下拉刷新时,如果当前下拉距离>上次下拉距离,则为向前,否则为退后
          *         isReady - 是否放开就可以刷新
          * 返回值: 无
          */
-        void onPull(float offset, boolean isForward, boolean isReady);
+        void onPull(float maxOffset, float offset, boolean isForward, boolean isReady);
 
         /**
          * 功  能: 滑动终止

@@ -31,6 +31,8 @@ public class SpringLayout extends ViewGroup {
     private int mTotalLength = 0; // 整个控件的长度
     private int mMaxPercent = 70;   // 最大滑动距离,[0,100](百分比,相对于SpringLayout的宽度或高度)
     private float mDamp = 0.35f;  // 滑动的阻尼系数,(0, 1]
+    private float mLastScrollX = 0f;    // 记录上次x轴方向滚动的偏移
+    private float mLastScrollY = 0f;    // 记录上次y轴方向滚动的偏移
     private Listener mListener = null;  // 监听器
 
     public SpringLayout(Context context) {
@@ -163,6 +165,7 @@ public class SpringLayout extends ViewGroup {
                         }
                     }
                 }
+                mLastScrollX = mLastScrollY = 0;
                 break;
         }
         return super.onTouchEvent(event);
@@ -188,9 +191,12 @@ public class SpringLayout extends ViewGroup {
             if (Math.abs(scrollX) < maxScrollX) {
                 int offsetX = (int)(x * mDamp);
                 scrollX += offsetX;   // 这里做临时变量是为了避免getScrollX()延迟生效
-                super.scrollBy(offsetX, y);
-                if (null != mListener) {
-                    mListener.onDrag(Math.abs(scrollX));
+                if (scrollX != mLastScrollX) {
+                    super.scrollBy(offsetX, y);
+                    if (null != mListener) {
+                        mListener.onDrag(getWidth() * mMaxPercent / 100, Math.abs(scrollX), scrollX > mLastScrollX);
+                    }
+                    mLastScrollX = scrollX;
                 }
             }
         } else {
@@ -199,9 +205,12 @@ public class SpringLayout extends ViewGroup {
             if (Math.abs(scrollY) < maxScrollY) {
                 int offsetY = (int)(y * mDamp);
                 scrollY += offsetY;   // 这里做临时变量是为了避免getScrollY()延迟生效
-                super.scrollBy(x, offsetY);
-                if (null != mListener) {
-                    mListener.onDrag(Math.abs(scrollY));
+                if (scrollY != mLastScrollY) {
+                    super.scrollBy(x, offsetY);
+                    if (null != mListener) {
+                        mListener.onDrag(getHeight() * mMaxPercent / 100, Math.abs(scrollY), scrollY > mLastScrollY);
+                    }
+                    mLastScrollY = scrollY;
                 }
             }
         }
@@ -392,10 +401,12 @@ public class SpringLayout extends ViewGroup {
 
         /**
          * 功  能: 正在滑动
-         * 参  数: offset - 滑动的偏移值
+         * 参  数: maxOffset - 可滑动的最大偏移值
+         *         offset - 当前滑动的偏移值
+         *         isForward - 是否正向滑动(向右或向下为正向滑动,即x值递增或y值递增)
          * 返回值: 无
          */
-        void onDrag(float offset);
+        void onDrag(float maxOffset, float offset, boolean isForward);
 
         /**
          * 功  能: 释放滑动
