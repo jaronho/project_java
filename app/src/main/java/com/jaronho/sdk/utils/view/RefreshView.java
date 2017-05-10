@@ -19,10 +19,10 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
     private RecyclerView mView = null;
     private RelativeLayout mHeader = null;
     private RelativeLayout mFooter = null;
-    private boolean mIsDragRight = false;
-    private boolean mIsDragLeft = false;
-    private boolean mIsDragBottom = false;
-    private boolean mIsDragTop = false;
+    private boolean mIsOnLeft = false;
+    private boolean mIsOnRight = false;
+    private boolean mIsOnTop = false;
+    private boolean mIsOnBottom = false;
     private Wrapper mHeaderWrapper = null;
     private Wrapper mFooterWrapper = null;
     private View mHeaderView = null;
@@ -66,25 +66,25 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
 
     @Override
     public boolean isCanScroll(boolean isHorizontal, boolean isForward) {
-        mIsDragRight = mIsDragLeft = mIsDragBottom = mIsDragTop = false;
+        mIsOnLeft = mIsOnRight = mIsOnTop = mIsOnBottom = false;
         if (isHorizontal) { // 水平滑动
             if (isForward) {
                 boolean isCanScrollToLeft = mView.canScrollHorizontally(-1);
-                mIsDragRight = !isCanScrollToLeft;
+                mIsOnLeft = !isCanScrollToLeft;
                 return isCanScrollToLeft;
             } else {
                 boolean isCanScrollToRight = mView.canScrollHorizontally(1);
-                mIsDragLeft = !isCanScrollToRight;
+                mIsOnRight = !isCanScrollToRight;
                 return isCanScrollToRight;
             }
         } else {    // 垂直滑动
             if (isForward) {
                 boolean isCanScrollToTop = mView.canScrollVertically(-1);
-                mIsDragBottom = !isCanScrollToTop;
+                mIsOnTop = !isCanScrollToTop;
                 return isCanScrollToTop;
             } else {
                 boolean isCanScrollToBottom = mView.canScrollVertically(1);
-                mIsDragTop = !mIsDragBottom;
+                mIsOnBottom = !isCanScrollToBottom;
                 return isCanScrollToBottom;
             }
         }
@@ -92,22 +92,22 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
 
     @Override
     public void onDrag(float maxOffset, float offset, boolean isForward) {
-        if (mIsDragRight) {
+        if (mIsOnLeft) {
             setHeaderMargin(-mHeaderViewSize + (int)offset);
             if (null != mHeaderWrapper) {
                 mHeaderWrapper.onPull(maxOffset, offset, isForward, offset >= mHeaderViewSize);
             }
-        } else if (mIsDragLeft) {
+        } else if (mIsOnRight) {
             setFooterMargin(-mFooterViewSize + (int)offset);
             if (null != mFooterWrapper) {
                 mFooterWrapper.onPull(maxOffset, offset, isForward, offset >= mFooterViewSize);
             }
-        } else if (mIsDragBottom) {
+        } else if (mIsOnTop) {
             setHeaderMargin(-mHeaderViewSize + (int)offset);
             if (null != mHeaderWrapper) {
                 mHeaderWrapper.onPull(maxOffset, offset,  isForward, offset >= mHeaderViewSize);
             }
-        } else if (mIsDragTop) {
+        } else if (mIsOnBottom) {
             setFooterMargin(-mFooterViewSize + (int)offset);
             if (null != mFooterWrapper) {
                 mFooterWrapper.onPull(maxOffset, offset, isForward, offset >= mFooterViewSize);
@@ -118,7 +118,7 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
     @Override
     public void onRelease(float maxOffset, float offset) {
         boolean isDoRestoreAction = true;
-        if (mIsDragRight) {
+        if (mIsOnLeft) {
             if (null != mHeaderWrapper) {
                 if (offset < mHeaderViewSize) {
                     mHeaderWrapper.onPullAbort();
@@ -127,7 +127,7 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
                     isDoRestoreAction = false;
                 }
             }
-        } else if (mIsDragLeft) {
+        } else if (mIsOnRight) {
             if (null != mFooterWrapper) {
                 if (offset < mFooterViewSize) {
                     mFooterWrapper.onPullAbort();
@@ -136,7 +136,7 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
                     isDoRestoreAction = false;
                 }
             }
-        } else if (mIsDragBottom) {
+        } else if (mIsOnTop) {
             if (null != mHeaderWrapper) {
                 if (offset < mHeaderViewSize) {
                     mHeaderWrapper.onPullAbort();
@@ -145,7 +145,7 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
                     isDoRestoreAction = false;
                 }
             }
-        } else if (mIsDragTop) {
+        } else if (mIsOnBottom) {
             if (null != mFooterWrapper ) {
                 if (offset < mFooterViewSize) {
                     mFooterWrapper.onPullAbort();
@@ -158,7 +158,7 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
         if (isDoRestoreAction) {
             restore();
         }
-        mIsDragRight = mIsDragLeft = mIsDragBottom = mIsDragTop = false;
+        mIsOnLeft = mIsOnRight = mIsOnTop = mIsOnBottom = false;
     }
 
     // 初始化
@@ -178,7 +178,7 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
                         if (null != mHeaderWrapper) {
                             mHeaderWrapper.onPullReady();
                         }
-                    } else if (recyclerView.canScrollHorizontally(1)) {
+                    } else if (!recyclerView.canScrollHorizontally(1)) {
                         if (null != mFooterWrapper) {
                             mFooterWrapper.onPullReady();
                         }
@@ -188,7 +188,7 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
                         if (null != mHeaderWrapper) {
                             mHeaderWrapper.onPullReady();
                         }
-                    } else if (recyclerView.canScrollVertically(1)) {
+                    } else if (!recyclerView.canScrollVertically(1)) {
                         if (null != mFooterWrapper) {
                             mFooterWrapper.onPullReady();
                         }
