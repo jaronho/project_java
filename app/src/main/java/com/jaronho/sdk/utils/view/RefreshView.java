@@ -32,23 +32,23 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
 
     public RefreshView(Context context) {
         super(context);
-        initialize();
+        initialize(null);
     }
 
     public RefreshView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initialize();
+        initialize(attrs);
     }
 
     public RefreshView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initialize();
+        initialize(attrs);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public RefreshView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        initialize();
+        initialize(attrs);
     }
 
     @Override
@@ -162,13 +162,13 @@ public class RefreshView extends RelativeLayout implements SpringLayout.Listener
     }
 
     // 初始化
-    private void initialize() {
+    private void initialize(AttributeSet attrs) {
         // 视图
         mViewLayout = new SpringLayout(getContext());
         mViewLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mViewLayout.setListener(this);
         addView(mViewLayout);
-        mView = new RecyclerView(getContext());
+        mView = new RecyclerView(getContext(), attrs);
         mView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
