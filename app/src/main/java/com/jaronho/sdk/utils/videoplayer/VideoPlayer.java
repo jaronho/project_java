@@ -31,6 +31,9 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
     public static abstract class SurfaceDestroyedHandler {
         public abstract void onCallback(VideoPlayer vp);
     }
+    public static abstract class PreparedHandler {
+        public abstract boolean onCallback(VideoPlayer vp);
+    }
     public static abstract class CompleteHandler {
         public abstract void onCallback(VideoPlayer vp);
     }
@@ -50,6 +53,7 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
     private int mCurrentPosition = 0;
     private SurfaceCreatedHandler mSurfaceCreatedHandler = null;
     private SurfaceDestroyedHandler mSurfaceDestroyedHandler = null;
+    private PreparedHandler mPreparedHandler = null;
     private CompleteHandler mCompleteHandler = null;
     private ErrorHandler mErrorHandler = null;
     private FitType mFitType = FitType.NONE;
@@ -193,9 +197,14 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
                 mSurfaceView.setLayoutParams(params);
             }
         }
-        // 开始播放
         mp.seekTo(0);
-        mp.start();
+        boolean doStart = true;
+        if (null != mPreparedHandler) {
+            doStart = mPreparedHandler.onCallback(this);
+        }
+        if (doStart) {
+            mp.start();
+        }
     }
 
     @Override
@@ -338,6 +347,11 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
     // 设置表层被销毁处理器(当播放器被销毁,或从前台进入到后台时触发)
     public void setSurfaceDestroyedHandler(SurfaceDestroyedHandler handler) {
         mSurfaceDestroyedHandler = handler;
+    }
+
+    // 设置准备完成处理器(当就绪可以立马播放时触发)
+    public void setPreparedHandler(PreparedHandler handler) {
+        mPreparedHandler = handler;
     }
 
     // 设置结束处理器(当不循环播放时才可被触发)
