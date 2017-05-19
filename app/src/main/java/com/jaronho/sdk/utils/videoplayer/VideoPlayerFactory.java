@@ -20,22 +20,10 @@ public class VideoPlayerFactory {
         return new VideoPlayer(activity, surfaceView, true);
     }
 
-    // 创建全屏视频播放器(结束回调,错误回调)
-    public static VideoPlayer createFull(Activity activity, VideoPlayer.CompleteHandler completeHandler, VideoPlayer.ErrorHandler errorHandler) {
-        VideoPlayer player = create(activity, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        player.setCompleteHandler(completeHandler);
-        player.setErrorHandler(errorHandler);
-        player.setFitType(VideoPlayer.FitType.SHOW_ALL);
-        return player;
-    }
-
-    // 创建全屏视频播放器(结束回调)
-    public static VideoPlayer createFull(Activity activity, VideoPlayer.CompleteHandler completeHandler) {
-        return createFull(activity, completeHandler, null);
-    }
-
     // 创建全屏视频播放器
     public static VideoPlayer createFull(Activity activity) {
-        return createFull(activity, null, null);
+        VideoPlayer player = create(activity, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        player.setFitType(VideoPlayer.FitType.SHOW_ALL);
+        return player;
     }
 }

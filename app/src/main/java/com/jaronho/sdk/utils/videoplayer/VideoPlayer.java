@@ -32,7 +32,10 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
         public abstract void onCallback(VideoPlayer vp);
     }
     public static abstract class PreparedHandler {
-        public abstract boolean onCallback(VideoPlayer vp);
+        public abstract boolean onCallback(VideoPlayer vp); // 返回true:自动播放,false:不自动播放
+    }
+    public static abstract class SeekCompleteHandler {
+        public abstract void onCallback(VideoPlayer vp);
     }
     public static abstract class CompleteHandler {
         public abstract void onCallback(VideoPlayer vp);
@@ -54,10 +57,12 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
     private SurfaceCreatedHandler mSurfaceCreatedHandler = null;
     private SurfaceDestroyedHandler mSurfaceDestroyedHandler = null;
     private PreparedHandler mPreparedHandler = null;
+    private SeekCompleteHandler mSeekCompleteHandler = null;
     private CompleteHandler mCompleteHandler = null;
     private ErrorHandler mErrorHandler = null;
     private FitType mFitType = FitType.NONE;
     private String mLogTag = "";
+    private boolean mSeekFlag = false;
 
     public VideoPlayer(Activity activity, SurfaceView surfaceView, boolean screenOn) {
         mActivity = activity;
@@ -210,6 +215,10 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
     @Override
     public void onSeekComplete(MediaPlayer mp) {
         showLog("onSeekComplete");
+        if (mSeekFlag && null != mSeekCompleteHandler) {
+            mSeekCompleteHandler.onCallback(this);
+        }
+        mSeekFlag = false;
     }
 
     @Override
@@ -223,10 +232,8 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
         if (null != mPlayer) {
             mPlayer.setDisplay(holder);
             // 创建SurfaceHolder的时候,如果存在上次播放的位置,则按照上次播放位置进行播放
-            if (mCurrentPosition > 0) {
-                mPlayer.seekTo(mCurrentPosition);
-                mCurrentPosition = 0;
-            }
+            mPlayer.seekTo(mCurrentPosition);
+            mCurrentPosition = 0;
         }
         if (null != mSurfaceCreatedHandler) {
             mSurfaceCreatedHandler.onCallback(this);
@@ -242,7 +249,7 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
     public void surfaceDestroyed(SurfaceHolder holder) {
         showLog("surfaceDestroyed");
         // 销毁SurfaceHolder的时候记录当前的播放位置并停止播放
-        if (null != mPlayer && mPlayer.isPlaying()) {
+        if (null != mPlayer) {
             mCurrentPosition = mPlayer.getCurrentPosition();
             mPlayer.pause();
         }
@@ -276,9 +283,10 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
         }
     }
 
-    // 快进,position(毫秒)
+    // 指定播放位置,position(毫秒)
     public void seekTo(int position) {
         showLog("seekTo, position = " + position);
+        mSeekFlag = true;
         if (null != mPlayer) {
             mPlayer.seekTo(position);
         }
@@ -308,8 +316,6 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
             if (isRelease) {
                 mPlayer.release();
                 mPlayer = null;
-                mCompleteHandler = null;
-                mErrorHandler = null;
             }
         }
     }
@@ -352,6 +358,11 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
     // 设置准备完成处理器(当就绪可以立马播放时触发)
     public void setPreparedHandler(PreparedHandler handler) {
         mPreparedHandler = handler;
+    }
+
+    // 设置指定播放位置完成处理器
+    public void setSeekCompleteHandler(SeekCompleteHandler handler) {
+        mSeekCompleteHandler = handler;
     }
 
     // 设置结束处理器(当不循环播放时才可被触发)
