@@ -330,6 +330,11 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
         return (null != mPlayer) ? mPlayer.getCurrentPosition() : 0;
     }
 
+    // 是否正在播放
+    public boolean isPlaying() {
+        return (null != mPlayer) && mPlayer.isPlaying();
+    }
+
     // 是否已销毁
     public boolean isDestroyed() {
         return null == mPlayer;
