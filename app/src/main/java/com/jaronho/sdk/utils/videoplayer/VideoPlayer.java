@@ -63,6 +63,7 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
     private FitType mFitType = FitType.NONE;
     private String mLogTag = "";
     private boolean mSeekFlag = false;
+    private boolean mPlayFlag = false;
 
     public VideoPlayer(Activity activity, SurfaceView surfaceView, boolean screenOn) {
         mActivity = activity;
@@ -192,7 +193,7 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
                     float ratioMin = Math.min(wRatio, hRatio);
                     wRatio = ratioMin;
                     hRatio = ratioMin;
-                }
+                }   // default FitType.EXACT_FIT == mFitType
                 videoWidth = (int)Math.ceil((float)videoWidth / wRatio);
                 videoHeight = (int)Math.ceil((float)videoHeight / hRatio);
                 // 设置SurfaceView的布局参数
@@ -214,9 +215,11 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
 
     @Override
     public void onSeekComplete(MediaPlayer mp) {
-        showLog("onSeekComplete");
-        if (mSeekFlag && null != mSeekCompleteHandler) {
-            mSeekCompleteHandler.onCallback(this);
+        if (mSeekFlag) {
+            showLog("onSeekComplete");
+            if (null != mSeekCompleteHandler) {
+                mSeekCompleteHandler.onCallback(this);
+            }
         }
         mSeekFlag = false;
     }
@@ -232,9 +235,15 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
         if (null != mPlayer) {
             mPlayer.setDisplay(holder);
             // 创建SurfaceHolder的时候,如果存在上次播放的位置,则按照上次播放位置进行播放
-            mPlayer.seekTo(mCurrentPosition);
-            mCurrentPosition = 0;
+            if (mCurrentPosition > 0) {
+                mPlayer.seekTo(mCurrentPosition);
+                mCurrentPosition = 0;
+            }
+            if (mPlayFlag) {
+                mPlayer.start();
+            }
         }
+        mPlayFlag = false;
         if (null != mSurfaceCreatedHandler) {
             mSurfaceCreatedHandler.onCallback(this);
         }
@@ -250,8 +259,11 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
         showLog("surfaceDestroyed");
         // 销毁SurfaceHolder的时候记录当前的播放位置并停止播放
         if (null != mPlayer) {
+            if (mPlayer.isPlaying()) {
+                mPlayer.pause();
+                mPlayFlag = true;
+            }
             mCurrentPosition = mPlayer.getCurrentPosition();
-            mPlayer.pause();
         }
         if (null != mSurfaceDestroyedHandler) {
             mSurfaceDestroyedHandler.onCallback(this);
@@ -330,14 +342,14 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
         return (null != mPlayer) ? mPlayer.getCurrentPosition() : 0;
     }
 
-    // 是否正在播放
-    public boolean isPlaying() {
-        return (null != mPlayer) && mPlayer.isPlaying();
-    }
-
     // 是否已销毁
     public boolean isDestroyed() {
         return null == mPlayer;
+    }
+
+    // 是否在播放
+    public boolean isPlaying() {
+        return (null != mPlayer) && mPlayer.isPlaying();
     }
 
     // 获取播放器
