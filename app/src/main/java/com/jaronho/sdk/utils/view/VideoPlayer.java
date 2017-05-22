@@ -1,4 +1,4 @@
-package com.jaronho.sdk.utils.videoplayer;
+package com.jaronho.sdk.utils.view;
 
 import android.app.Activity;
 import android.graphics.Point;

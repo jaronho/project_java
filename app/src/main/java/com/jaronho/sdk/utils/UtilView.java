@@ -19,13 +19,17 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jaronho.sdk.library.timer.Timer;
 import com.jaronho.sdk.library.timer.TimerManager;
+import com.jaronho.sdk.utils.view.SectorImageView;
+import com.jaronho.sdk.utils.view.VideoPlayer;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,10 +37,10 @@ import java.util.regex.Pattern;
 /**
  * Author:  jaron.ho
  * Date:    2017-02-08
- * Brief:   工具集
+ * Brief:   视图工具集
  */
 
-public final class ViewUtil {
+public final class UtilView {
     private static long mCostStartTime = 0;         // 耗时计算开始时间(毫秒)
     private static Toast mToast = null;             // 提示组件
 
@@ -173,23 +177,6 @@ public final class ViewUtil {
     }
 
     /**
-     * 功  能: 创建环形进度条
-     * 参  数: image - 图片
-     *         startAngle - 开始角度,[0, 360)
-     *         sweepAngle - 扫描角度,[0, 360]
-     *         clockwise - true:顺时针,false:逆时针
-     * 返回值: SectorDrawable
-     */
-    public static SectorDrawable createCircleProgress(ImageView image, float startAngle, float sweepAngle, boolean clockwise) {
-        SectorDrawable sectorDrawable = null;
-        if (null != image) {
-            sectorDrawable = new SectorDrawable(image.getDrawable(), startAngle, sweepAngle, clockwise);
-            image.setImageDrawable(sectorDrawable);
-        }
-        return sectorDrawable;
-    }
-
-    /**
      * 功  能: 显示提示文本
      * 参  数: context - 上下文
      *         msg - 提示信息
@@ -226,7 +213,7 @@ public final class ViewUtil {
      *         underline - 是否显示下划线
      * 返回值: ClickableSpan
      */
-    private static ClickableSpan createClickableSpan(final String url, final int color, final boolean underline) {
+    public static ClickableSpan createClickableSpan(final String url, final int color, final boolean underline) {
         return new ClickableSpan() {
             @Override
             public void onClick(View widget) {
@@ -287,5 +274,31 @@ public final class ViewUtil {
         tv.setText(sp);
         tv.setMovementMethod(LinkMovementMethod.getInstance());
         return tv;
+    }
+
+    /**
+     * 功  能: 创建视频播放器
+     * 参  数: activity - 活动
+     *         width - 宽度
+     *         height - 高度
+     * 返回值: VideoPlayer
+     */
+    public static VideoPlayer createVideoPlayer(Activity activity, int width, int height) {
+        SurfaceView surfaceView = new SurfaceView(activity);
+        surfaceView.setLayoutParams(new ViewGroup.LayoutParams(width, height));
+        surfaceView.setZOrderOnTop(true);
+        surfaceView.setZOrderMediaOverlay(true);
+        return new VideoPlayer(activity, surfaceView, true);
+    }
+
+    /**
+     * 功  能: 创建全屏视频播放器
+     * 参  数: 无
+     * 返回值: VideoPlayer
+     */
+    public static VideoPlayer createFullVideoPlayer(Activity activity) {
+        VideoPlayer player = createVideoPlayer(activity, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        player.setFitType(VideoPlayer.FitType.SHOW_ALL);
+        return player;
     }
 }

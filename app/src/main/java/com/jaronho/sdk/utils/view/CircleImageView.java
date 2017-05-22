@@ -21,7 +21,7 @@ import android.util.AttributeSet;
 /**
  * Author:  Administrator
  * Date:    2017/5/2
- * Brief:   CircleImageView
+ * Brief:   圆形图片
  */
 
 public class CircleImageView extends android.support.v7.widget.AppCompatImageView {
