@@ -49,6 +49,15 @@ public class QuickCalendar {
     }
 
     /**
+     * 功  能: 获取当前时间戳
+     * 参  数: 无
+     * 返回值: long,毫秒
+     */
+    public long getTimeStamp() {
+        return mCalendar.getTimeInMillis();
+    }
+
+    /**
      * 功  能: 获取年
      * 参  数: 无
      * 返回值: int
@@ -103,7 +112,7 @@ public class QuickCalendar {
     }
 
     /**
-     * 功  能: 获取微秒
+     * 功  能: 获取毫秒
      * 参  数: 无
      * 返回值: int
      */

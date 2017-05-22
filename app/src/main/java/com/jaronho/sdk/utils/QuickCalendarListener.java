@@ -66,27 +66,27 @@ public abstract class QuickCalendarListener {
                 int currentYear = mQuickCalendar.getYear();
                 if (currentHour != mLastHour) {    // 跨小时
                     mLastHour = currentHour;
-                    onNewHour();
+                    onNewHour(mQuickCalendar);
                 }
                 if (currentDay != mLastDay) {      // 跨天
                     mLastDay = currentDay;
-                    onNewDay();
+                    onNewDay(mQuickCalendar);
                 }
                 if (currentWeekDay != mLastWeekDay) {
                     mLastWeekDay = currentWeekDay;
                     if (1 == currentWeekDay) {     // 跨周
-                        onNewWeek();
+                        onNewWeek(mQuickCalendar);
                     }
                 }
                 if (currentMonth != mLastMonth) {  // 跨月
                     mLastMonth = currentMonth;
-                    onNewMonth();
+                    onNewMonth(mQuickCalendar);
                 }
                 if (currentYear != mLastYear) {    // 跨年
                     mLastYear = currentYear;
-                    onNewYear();
+                    onNewYear(mQuickCalendar);
                 }
-                onInterval();
+                onInterval(mQuickCalendar);
             }
         }, 0, interval);
     }
@@ -105,43 +105,43 @@ public abstract class QuickCalendarListener {
 
     /**
      * 功  能: 触发新的一小时
-     * 参  数: 无
+     * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onNewHour();
+    public abstract void onNewHour(QuickCalendar quickCalendar);
 
     /**
      * 功  能: 触发新的一天
-     * 参  数: 无
+     * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onNewDay();
+    public abstract void onNewDay(QuickCalendar quickCalendar);
 
     /**
      * 功  能: 触发新的一周
-     * 参  数: 无
+     * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onNewWeek();
+    public abstract void onNewWeek(QuickCalendar quickCalendar);
 
     /**
      * 功  能: 触发新的一月
-     * 参  数: 无
+     * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onNewMonth();
+    public abstract void onNewMonth(QuickCalendar quickCalendar);
 
     /**
      * 功  能: 触发新的一年
-     * 参  数: 无
+     * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onNewYear();
+    public abstract void onNewYear(QuickCalendar quickCalendar);
 
     /**
      * 功  能: 触发时间间隔
-     * 参  数: 无
+     * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onInterval();
+    public abstract void onInterval(QuickCalendar quickCalendar);
 }
