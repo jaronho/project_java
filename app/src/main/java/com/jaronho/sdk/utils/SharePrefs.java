@@ -17,6 +17,7 @@ public class SharePrefs {
     private SharedPreferences.Editor mEditor = null;
     private SharedPreferencesCompat.EditorCompat mEditorCompat = null;
     private boolean mAutoSave = true;
+    private String mFileName = "";
 
     /**
      * 功  能: 构造函数
@@ -32,6 +33,7 @@ public class SharePrefs {
         mEditorCompat = SharedPreferencesCompat.EditorCompat.getInstance();
         mEditorCompat.apply(mEditor);
         mAutoSave = autoSave;
+        mFileName = name;
     }
 
     /**
@@ -53,6 +55,15 @@ public class SharePrefs {
      */
     public SharePrefs(Context context, String name) {
         this(context, name, true);
+    }
+
+    /**
+     * 功  能: 获取文件名
+     * 参  数: 无
+     * 返回值: String
+     */
+    public String getFileName() {
+        return mFileName;
     }
 
     /**

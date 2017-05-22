@@ -25,13 +25,14 @@ public class Database extends SQLiteOpenHelper {
 	 * @param name 数据库名
 	 * @param factory 游标工厂
 	 * @param version 版本号
+	 * @param errorHandler 错误处理句柄
 	 */
-	public Database(Context context, String name, CursorFactory factory, int version) {
-		super(context, name, factory, version);
-	}
-
 	public Database(Context context, String name, CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
 		super(context, name, factory, version, errorHandler);
+	}
+
+	public Database(Context context, String name, CursorFactory factory, int version) {
+		this(context, name, factory, version, null);
 	}
 
 	@Override
@@ -41,8 +42,8 @@ public class Database extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 	}
-	
-	/**
+
+	 /**
      * 关闭当前使用数据库
      */
 	@Override
