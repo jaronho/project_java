@@ -8,15 +8,33 @@ import java.util.Calendar;
  * Brief:   日历
  */
 
-public class UtilCalendar {
-    private static Calendar mCalendar = Calendar.getInstance();
+public class QuickCalendar {
+    private Calendar mCalendar = Calendar.getInstance();
+
+    /**
+     * 功  能: 构造函数
+     * 参  数: timeStamp - 时间戳(毫秒)
+     * 返回值: 无
+     */
+    public QuickCalendar(long timeStamp) {
+        setTime(timeStamp);
+    }
+
+    /**
+     * 功  能: 构造函数
+     * 参  数: 无
+     * 返回值: 无
+     */
+    public QuickCalendar() {
+        setNow();
+    }
 
     /**
      * 功  能: 设置指定时间
      * 参  数: timeStamp - 时间戳(毫秒)
      * 返回值: 无
      */
-    public static void setTime(long timeStamp) {
+    public void setTime(long timeStamp) {
         mCalendar.clear();
         mCalendar.setTimeInMillis(timeStamp);
     }
@@ -26,7 +44,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: 无
      */
-    public static void setNow() {
+    public void setNow() {
         setTime(System.currentTimeMillis());
     }
 
@@ -35,7 +53,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: int
      */
-    public static int getYear() {
+    public int getYear() {
         return mCalendar.get(Calendar.YEAR);
     }
 
@@ -44,7 +62,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: int,一月:1,二月:2,三月:3,四月:4,五月:5,六月:6,七月:7,八月:8,九月:9,十月:10,十一月:11,十二月:12
      */
-    public static int getMonth() {
+    public int getMonth() {
         return mCalendar.get(Calendar.MONTH) + 1;
     }
 
@@ -53,7 +71,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: int
      */
-    public static int getDay() {
+    public int getDay() {
         return mCalendar.get(Calendar.DATE);
     }
 
@@ -62,7 +80,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: int
      */
-    public static int getHour() {
+    public int getHour() {
         return mCalendar.get(Calendar.HOUR_OF_DAY);
     }
 
@@ -71,7 +89,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: int
      */
-    public static int getMinute() {
+    public int getMinute() {
         return mCalendar.get(Calendar.MINUTE);
     }
 
@@ -80,7 +98,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: int
      */
-    public static int getSecond() {
+    public int getSecond() {
         return mCalendar.get(Calendar.SECOND);
     }
 
@@ -89,7 +107,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: int
      */
-    public static int getMillisecond() {
+    public int getMillisecond() {
         return mCalendar.get(Calendar.MILLISECOND);
     }
 
@@ -98,7 +116,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: int
      */
-    public static int getWeekOfYear() {
+    public int getWeekOfYear() {
         return mCalendar.get(Calendar.WEEK_OF_YEAR);
     }
 
@@ -107,7 +125,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: int
      */
-    public static int getWeekOfMonth() {
+    public int getWeekOfMonth() {
         return mCalendar.get(Calendar.WEEK_OF_MONTH);
     }
 
@@ -116,7 +134,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: int
      */
-    public static int getDayOfYear() {
+    public int getDayOfYear() {
         return mCalendar.get(Calendar.DAY_OF_YEAR);
     }
 
@@ -125,7 +143,7 @@ public class UtilCalendar {
      * 参  数: 无
      * 返回值: int,周天:0,周一:1,周二:2,周三:3,周四:4,周五:5,周六:6
      */
-    public static int getDayOfWeek() {
+    public int getDayOfWeek() {
         return mCalendar.get(Calendar.DAY_OF_WEEK) - 1;
     }
 }
