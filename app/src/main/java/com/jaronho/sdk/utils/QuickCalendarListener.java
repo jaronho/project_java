@@ -10,13 +10,31 @@ import java.util.TimerTask;
  */
 
 public abstract class QuickCalendarListener {
-    private QuickCalendar mQuickCalendar = new QuickCalendar();
+    private QuickCalendar mQuickCalendar = null;
     private Timer mTimer = null;        // 定时器
     private int mLastHour = 0;          // 跨小时计算
     private int mLastDay = 0;           // 跨天计算
     private int mLastWeekDay = 0;       // 跨周计算
     private int mLastMonth = 0;         // 跨月计算
     private int mLastYear = 0;          // 跨年计算
+
+    /**
+     * 功  能: 构造函数
+     * 参  数: timeStamp - 时间戳(毫秒)
+     * 返回值: 无
+     */
+    public QuickCalendarListener(long timeStamp) {
+        mQuickCalendar = new QuickCalendar(timeStamp);
+    }
+
+    /**
+     * 功  能: 构造函数
+     * 参  数: 无
+     * 返回值: 无
+     */
+    public QuickCalendarListener() {
+        mQuickCalendar = new QuickCalendar();
+    }
 
     @Override
     protected void finalize() throws Throwable {
