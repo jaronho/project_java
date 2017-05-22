@@ -121,16 +121,7 @@ public class UtilCalendar {
     }
 
     /**
-     * 功  能: 获取当前在本月第几天
-     * 参  数: 无
-     * 返回值: int
-     */
-    public static int getDayOfMonth() {
-        return mCalendar.get(Calendar.DAY_OF_MONTH);
-    }
-
-    /**
-     * 功  能: 获取当前在本月第几天
+     * 功  能: 获取当前在本周第几天
      * 参  数: 无
      * 返回值: int,周天:0,周一:1,周二:2,周三:3,周四:4,周五:5,周六:6
      */
