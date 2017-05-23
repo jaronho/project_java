@@ -277,28 +277,28 @@ public final class UtilView {
     }
 
     /**
-     * 功  能: 创建视频播放器
+     * 功  能: 创建视频播放器(默认大小)
      * 参  数: activity - 活动
-     *         width - 宽度
-     *         height - 高度
      * 返回值: VideoPlayer
      */
-    public static VideoPlayer createVideoPlayer(Activity activity, int width, int height) {
+    public static VideoPlayer createVideoPlayer(Activity activity) {
         SurfaceView surfaceView = new SurfaceView(activity);
-        surfaceView.setLayoutParams(new ViewGroup.LayoutParams(width, height));
         surfaceView.setZOrderOnTop(true);
         surfaceView.setZOrderMediaOverlay(true);
         return new VideoPlayer(activity, surfaceView, true);
     }
 
     /**
-     * 功  能: 创建全屏视频播放器
-     * 参  数: 无
+     * 功  能: 创建视频播放器(固定宽高)
+     * 参  数: activity - 活动
+     *         width - 宽度
+     *         height - 高度
      * 返回值: VideoPlayer
      */
-    public static VideoPlayer createFullVideoPlayer(Activity activity) {
-        VideoPlayer player = createVideoPlayer(activity, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        player.setFitType(VideoPlayer.FitType.SHOW_ALL);
+    public static VideoPlayer createVideoPlayer(Activity activity, int width, int height) {
+        VideoPlayer player = createVideoPlayer(activity);
+        player.setFitType(VideoPlayer.FitType.FIXED_SIZE);
+        player.getView().setLayoutParams(new ViewGroup.LayoutParams(width, height));
         return player;
     }
 }

@@ -44,10 +44,11 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
         public abstract void onCallback(VideoPlayer vp, int what, int extra);
     }
     public enum FitType {
-        NONE,            // 原始大小
-        SHOW_ALL,       // 按比例放缩,全部展示不裁剪
-        SIDE_FIT,       // 按比例缩放,适配其中一边(宽或高)
-        EXACT_FIT       // 拉伸变形,使铺满屏幕
+        FIXED_SIZE,     // 固定宽高
+        VIDEO_SIZE,     // 视频宽高
+        SHOW_ALL,       // 全屏显示,全部展示不裁剪,宽高中大的铺满屏幕,小的留有黑边
+        SIDE_FIT,       // 全屏显示,全屏展示不留黑边,宽高中小的铺满屏幕,大的超出屏幕
+        FULL_FIT        // 全屏显示,拉伸变形,使铺满屏幕
     }
 
     private Activity mActivity = null;
@@ -60,7 +61,7 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
     private SeekCompleteHandler mSeekCompleteHandler = null;
     private CompleteHandler mCompleteHandler = null;
     private ErrorHandler mErrorHandler = null;
-    private FitType mFitType = FitType.NONE;
+    private FitType mFitType = FitType.VIDEO_SIZE;
     private String mLogTag = "";
     private boolean mSeekFlag = false;
     private boolean mPlayFlag = false;
@@ -174,34 +175,34 @@ public class VideoPlayer implements OnBufferingUpdateListener, OnCompletionListe
     @Override
     public void onPrepared(MediaPlayer mp) {
         showLog("onPrepared");
-        if (FitType.NONE != mFitType) {
-            Point displaySize = new Point();
-            mActivity.getWindowManager().getDefaultDisplay().getSize(displaySize);
+        if (FitType.FIXED_SIZE != mFitType) {
             // 获取video的宽和高
             int videoWidth = mp.getVideoWidth();
             int videoHeight = mp.getVideoHeight();
-            // 如果video的宽或者高超出了当前屏幕的大小，则要进行缩放
-            if (videoWidth > displaySize.x || videoHeight > displaySize.y) {
-                float wRatio = (float)videoWidth / (float)displaySize.x;
-                float hRatio = (float)videoHeight / (float)displaySize.y;
+            if (FitType.VIDEO_SIZE != mFitType) {
+                Point displaySize = new Point();
+                mActivity.getWindowManager().getDefaultDisplay().getSize(displaySize);
+                float wRatio = (float) videoWidth / (float) displaySize.x;
+                float hRatio = (float) videoHeight / (float) displaySize.y;
                 // 进行缩放
                 if (FitType.SHOW_ALL == mFitType) {
                     float ratioMax = Math.max(wRatio, hRatio);
-                    wRatio = ratioMax;
-                    hRatio = ratioMax;
+                    videoWidth = (int) Math.ceil((float) videoWidth / ratioMax);
+                    videoHeight = (int) Math.ceil((float) videoHeight / ratioMax);
                 } else if (FitType.SIDE_FIT == mFitType) {
                     float ratioMin = Math.min(wRatio, hRatio);
-                    wRatio = ratioMin;
-                    hRatio = ratioMin;
-                }   // default FitType.EXACT_FIT == mFitType
-                videoWidth = (int)Math.ceil((float)videoWidth / wRatio);
-                videoHeight = (int)Math.ceil((float)videoHeight / hRatio);
-                // 设置SurfaceView的布局参数
-                ViewGroup.LayoutParams params = mSurfaceView.getLayoutParams();
-                params.width = videoWidth;
-                params.height = videoHeight;
-                mSurfaceView.setLayoutParams(params);
+                    videoWidth = (int) Math.ceil((float) videoWidth / ratioMin);
+                    videoHeight = (int) Math.ceil((float) videoHeight / ratioMin);
+                } else if (FitType.FULL_FIT == mFitType) {
+                    videoWidth = (int) Math.ceil((float) videoWidth / wRatio);
+                    videoHeight = (int) Math.ceil((float) videoHeight / hRatio);
+                }
             }
+            // 设置SurfaceView的布局参数
+            ViewGroup.LayoutParams params = mSurfaceView.getLayoutParams();
+            params.width = videoWidth;
+            params.height = videoHeight;
+            mSurfaceView.setLayoutParams(params);
         }
         mp.seekTo(0);
         boolean doStart = true;
