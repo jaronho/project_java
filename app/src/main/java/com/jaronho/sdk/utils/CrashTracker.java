@@ -107,7 +107,7 @@ public class CrashTracker implements UncaughtExceptionHandler {
 	 * 返回值: 无
 	 */
 	public void run(Context context, String toastTips, Handler handler) {
-		run(context, null, null, toastTips, handler);
+		run(context, "", "", toastTips, handler);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class CrashTracker implements UncaughtExceptionHandler {
 	 * 返回值: 无
 	 */
 	public void run(Context context, Handler handler) {
-		run(context, null, null, null, handler);
+		run(context, "", "", "", handler);
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class CrashTracker implements UncaughtExceptionHandler {
 	 * 返回值: 无
 	 */
 	public void run(Context context) {
-		run(context, null, null, null, null);
+		run(context, "", "", "", null);
 	}
 
 	/**
