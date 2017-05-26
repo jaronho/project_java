@@ -12,6 +12,7 @@ import java.util.TimerTask;
 public abstract class QuickCalendarListener {
     private QuickCalendar mQuickCalendar = null;
     private Timer mTimer = null;        // 定时器
+    private int mLastMinute = 0;        // 跨分钟计算
     private int mLastHour = 0;          // 跨小时计算
     private int mLastDay = 0;           // 跨天计算
     private int mLastWeekDay = 0;       // 跨周计算
@@ -43,12 +44,13 @@ public abstract class QuickCalendarListener {
     }
 
     /**
-     * 功  能: 开始监听
-     * 参  数: interval - 时间间隔(毫秒)
+     * 功  能: 开始监听(每秒监听)
+     * 参  数: 无
      * 返回值: 无
      */
-    public void start(int interval) {
+    public void start() {
         stop();
+        mLastMinute = mQuickCalendar.getMinute();
         mLastHour = mQuickCalendar.getHour();
         mLastDay = mQuickCalendar.getDay();
         mLastWeekDay = mQuickCalendar.getDayOfWeek();
@@ -59,11 +61,16 @@ public abstract class QuickCalendarListener {
             @Override
             public void run() {
                 mQuickCalendar.setNow();
+                int currentMinute = mQuickCalendar.getMinute();
                 int currentHour = mQuickCalendar.getHour();
                 int currentDay = mQuickCalendar.getDay();
                 int currentWeekDay = mQuickCalendar.getDayOfWeek();
                 int currentMonth = mQuickCalendar.getMonth();
                 int currentYear = mQuickCalendar.getYear();
+                if (currentMinute != mLastMinute) {
+                    mLastMinute = currentMinute;    // 跨分钟
+                    onNewMinute(mQuickCalendar);
+                }
                 if (currentHour != mLastHour) {    // 跨小时
                     mLastHour = currentHour;
                     onNewHour(mQuickCalendar);
@@ -88,7 +95,7 @@ public abstract class QuickCalendarListener {
                 }
                 onInterval(mQuickCalendar);
             }
-        }, 0, interval);
+        }, 0, 1000);
     }
 
     /**
@@ -102,6 +109,13 @@ public abstract class QuickCalendarListener {
             mTimer = null;
         }
     }
+
+    /**
+     * 功  能: 触发新的一分钟
+     * 参  数: quickCalendar - 日历
+     * 返回值: 无
+     */
+    public abstract void onNewMinute(QuickCalendar quickCalendar);
 
     /**
      * 功  能: 触发新的一小时

@@ -22,13 +22,11 @@ import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jaronho.sdk.library.timer.Timer;
 import com.jaronho.sdk.library.timer.TimerManager;
-import com.jaronho.sdk.utils.view.SectorImageView;
 import com.jaronho.sdk.utils.view.VideoPlayer;
 
 import java.util.regex.Matcher;
