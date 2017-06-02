@@ -176,6 +176,10 @@ public class TimerManager {
         }
     }
 
+    public Timer get(String id) {
+        return mTimerMap.containsKey(id) ? mTimerMap.get(id) : null;
+    }
+
     public void clear(boolean doStopCB) {
         if (!mTimerMap.isEmpty()) {
             Set<Entry<String, Timer>> entrySet = mTimerMap.entrySet();

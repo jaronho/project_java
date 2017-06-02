@@ -134,9 +134,9 @@ public final class UtilView {
                         tm.setInterval(mShowFlag ? showTime : hideTime);
                         view.setVisibility(mShowFlag ? View.VISIBLE : (hideTime > 0 ? View.INVISIBLE : View.VISIBLE));
                     }
-                }, handler, null, false, "TimerBlink_" + view.getId());
+                }, handler, null, false, "DefaultTimerBlink_" + view.getId());
             } else if (count > 0) {
-                TimerManager.getInstance().run(showTime * count, 1, handler, "TimerBlink_" + view.getId());
+                TimerManager.getInstance().run(showTime * count, 1, handler, "DefaultTimerBlink_" + view.getId());
             }
         }
     }
@@ -168,10 +168,24 @@ public final class UtilView {
     public static void stopBlink(View view, boolean showAtLast) {
         if (null != view) {
             if (View.NO_ID != view.getId()) {
-                TimerManager.getInstance().stop("TimerBlink_" + view.getId(), false);
+                TimerManager.getInstance().stop("DefaultTimerBlink_" + view.getId(), false);
             }
             view.setVisibility(showAtLast ? View.VISIBLE : View.INVISIBLE);
         }
+    }
+
+    /**
+     * 功  能: 是否在闪烁
+     * 参  数: view - 视图
+     * 返回值: boolean
+     */
+    public static boolean isBlink(View view) {
+        if (null != view) {
+            if (View.NO_ID != view.getId()) {
+                return null != TimerManager.getInstance().get("DefaultTimerBlink_" + view.getId());
+            }
+        }
+        return false;
     }
 
     /**
