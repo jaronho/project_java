@@ -175,20 +175,6 @@ public final class UtilView {
     }
 
     /**
-     * 功  能: 是否在闪烁
-     * 参  数: view - 视图
-     * 返回值: boolean
-     */
-    public static boolean isBlink(View view) {
-        if (null != view) {
-            if (View.NO_ID != view.getId()) {
-                return null != TimerManager.getInstance().get("DefaultTimerBlink_" + view.getId());
-            }
-        }
-        return false;
-    }
-
-    /**
      * 功  能: 显示提示文本
      * 参  数: context - 上下文
      *         msg - 提示信息

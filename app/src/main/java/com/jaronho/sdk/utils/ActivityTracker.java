@@ -3,6 +3,7 @@ package com.jaronho.sdk.utils;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
+import android.content.Context;
 import android.os.Bundle;
 
 /**
@@ -13,6 +14,7 @@ import android.os.Bundle;
 
 public class ActivityTracker implements ActivityLifecycleCallbacks {
     private static ActivityTracker mInstance = null;
+    private static Application mApp = null;
     private static int mActivityCount = 0;
     private static boolean mIsForground = false;
     private static Activity mTopActivity = null;
@@ -62,8 +64,27 @@ public class ActivityTracker implements ActivityLifecycleCallbacks {
             synchronized (ActivityTracker.class) {
                 mInstance = new ActivityTracker();
                 app.registerActivityLifecycleCallbacks(mInstance);
+                mApp = app;
             }
         }
+    }
+
+    /**
+     * 功  能: 获取应用实例
+     * 参  数: 无
+     * 返回值: Application
+     */
+    public static Application getApplication() {
+        return mApp;
+    }
+
+    /**
+     * 功  能: 获取应用上下文
+     * 参  数: 无
+     * 返回值: Context
+     */
+    public static Context getApplicationContext() {
+        return null != mApp ? mApp.getApplicationContext() : null;
     }
 
     /**
