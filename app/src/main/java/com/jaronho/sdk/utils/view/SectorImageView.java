@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
 /**
@@ -13,7 +14,7 @@ import android.util.AttributeSet;
  * Brief:   扇形图片
  */
 
-public class SectorImageView extends android.support.v7.widget.AppCompatImageView {
+public class SectorImageView extends AppCompatImageView {
     private Path mPath = new Path();
     private float mStartAngle = 0;
     private float mSweepAngle = 360;
