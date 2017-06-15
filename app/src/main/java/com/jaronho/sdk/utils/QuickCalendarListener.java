@@ -140,47 +140,54 @@ public abstract class QuickCalendarListener {
      * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onNewMinute(QuickCalendar quickCalendar);
+    protected void onNewMinute(QuickCalendar quickCalendar) {
+    };
 
     /**
      * 功  能: 触发新的一小时
      * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onNewHour(QuickCalendar quickCalendar);
+    protected void onNewHour(QuickCalendar quickCalendar) {
+    };
 
     /**
      * 功  能: 触发新的一天
      * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onNewDay(QuickCalendar quickCalendar);
+    protected void onNewDay(QuickCalendar quickCalendar) {
+    };
 
     /**
      * 功  能: 触发新的一周
      * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onNewWeek(QuickCalendar quickCalendar);
+    protected void onNewWeek(QuickCalendar quickCalendar) {
+    };
 
     /**
      * 功  能: 触发新的一月
      * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onNewMonth(QuickCalendar quickCalendar);
+    protected void onNewMonth(QuickCalendar quickCalendar) {
+    };
 
     /**
      * 功  能: 触发新的一年
      * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onNewYear(QuickCalendar quickCalendar);
+    protected void onNewYear(QuickCalendar quickCalendar) {
+    };
 
     /**
      * 功  能: 触发时间间隔
      * 参  数: quickCalendar - 日历
      * 返回值: 无
      */
-    public abstract void onInterval(QuickCalendar quickCalendar);
+    protected void onInterval(QuickCalendar quickCalendar) {
+    };
 }
