@@ -21,6 +21,20 @@ public abstract class QuickCalendarListener {
 
     /**
      * 功  能: 构造函数
+     * 参  数: year - 年
+     *         month - 月
+     *         day - 日
+     *         hour - 时
+     *         minute - 分
+     *         second - 秒
+     * 返回值: 无
+     */
+    public QuickCalendarListener(int year, int month, int day, int hour, int minute, int second) {
+        mQuickCalendar = new QuickCalendar(year, month, day, hour, minute, second);
+    }
+
+    /**
+     * 功  能: 构造函数
      * 参  数: timeStamp - 时间戳(毫秒)
      * 返回值: 无
      */
@@ -45,10 +59,13 @@ public abstract class QuickCalendarListener {
 
     /**
      * 功  能: 开始监听(每秒监听)
-     * 参  数: 无
+     * 参  数: interval - 时间间隔(毫秒)
      * 返回值: 无
      */
-    public void start() {
+    public void start(final int interval) {
+        if (interval <= 0) {
+            throw new AssertionError("interval must > 0");
+        }
         stop();
         mLastMinute = mQuickCalendar.getMinute();
         mLastHour = mQuickCalendar.getHour();
@@ -60,30 +77,28 @@ public abstract class QuickCalendarListener {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                mQuickCalendar.setNow();
+                mQuickCalendar.setTime(getTimeStamp());
                 int currentMinute = mQuickCalendar.getMinute();
                 int currentHour = mQuickCalendar.getHour();
                 int currentDay = mQuickCalendar.getDay();
                 int currentWeekDay = mQuickCalendar.getDayOfWeek();
                 int currentMonth = mQuickCalendar.getMonth();
                 int currentYear = mQuickCalendar.getYear();
-                if (currentMinute != mLastMinute) {
-                    mLastMinute = currentMinute;    // 跨分钟
+                if (currentMinute != mLastMinute || interval >= 60000) {    // 跨分钟
+                    mLastMinute = currentMinute;
                     onNewMinute(mQuickCalendar);
                 }
-                if (currentHour != mLastHour) {    // 跨小时
+                if (currentHour != mLastHour || interval >= 3600000) {    // 跨小时
                     mLastHour = currentHour;
                     onNewHour(mQuickCalendar);
                 }
-                if (currentDay != mLastDay) {      // 跨天
+                if (currentDay != mLastDay || interval >= 86400000) {      // 跨天
                     mLastDay = currentDay;
                     onNewDay(mQuickCalendar);
                 }
-                if (currentWeekDay != mLastWeekDay) {
+                if (currentWeekDay != mLastWeekDay || interval >= 604800000) {  // 跨周
                     mLastWeekDay = currentWeekDay;
-                    if (1 == currentWeekDay) {     // 跨周
-                        onNewWeek(mQuickCalendar);
-                    }
+                    onNewWeek(mQuickCalendar);
                 }
                 if (currentMonth != mLastMonth) {  // 跨月
                     mLastMonth = currentMonth;
@@ -95,7 +110,7 @@ public abstract class QuickCalendarListener {
                 }
                 onInterval(mQuickCalendar);
             }
-        }, 0, 1000);
+        }, 0, interval);
     }
 
     /**
@@ -108,6 +123,15 @@ public abstract class QuickCalendarListener {
             mTimer.cancel();
             mTimer = null;
         }
+    }
+
+    /**
+     * 功  能: 获取时间戳(内部调用,可重写)
+     * 参  数: 无
+     * 返回值: long,时间戳
+     */
+    protected long getTimeStamp() {
+        return System.currentTimeMillis();
     }
 
     /**

@@ -13,6 +13,20 @@ public class QuickCalendar {
 
     /**
      * 功  能: 构造函数
+     * 参  数: year - 年
+     *         month - 月
+     *         day - 日
+     *         hour - 时
+     *         minute - 分
+     *         second - 秒
+     * 返回值: 无
+     */
+    public QuickCalendar(int year, int month, int day, int hour, int minute, int second) {
+        setDate(year, month, day, hour, minute, second);
+    }
+
+    /**
+     * 功  能: 构造函数
      * 参  数: timeStamp - 时间戳(毫秒)
      * 返回值: 无
      */
@@ -27,6 +41,21 @@ public class QuickCalendar {
      */
     public QuickCalendar() {
         setNow();
+    }
+
+    /**
+     * 功  能: 设置指定日期
+     * 参  数: year - 年
+     *         month - 月
+     *         day - 日
+     *         hour - 时
+     *         minute - 分
+     *         second - 秒
+     * 返回值: 无
+     */
+    public void setDate(int year, int month, int day, int hour, int minute, int second) {
+        mCalendar.clear();
+        mCalendar.set(year, month, day, hour, minute, second);
     }
 
     /**
