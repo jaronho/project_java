@@ -98,10 +98,10 @@ public class QuickCalendar {
     /**
      * 功  能: 获取月
      * 参  数: 无
-     * 返回值: int,一月:1,二月:2,三月:3,四月:4,五月:5,六月:6,七月:7,八月:8,九月:9,十月:10,十一月:11,十二月:12
+     * 返回值: int,一月:0,二月:1,三月:2,四月:3,五月:4,六月:5,七月:6,八月:7,九月:8,十月:09,十一月:10,十二月:11
      */
     public int getMonth() {
-        return mCalendar.get(Calendar.MONTH) + 1;
+        return mCalendar.get(Calendar.MONTH);
     }
 
     /**
@@ -179,9 +179,9 @@ public class QuickCalendar {
     /**
      * 功  能: 获取当前在本周第几天
      * 参  数: 无
-     * 返回值: int,周天:0,周一:1,周二:2,周三:3,周四:4,周五:5,周六:6
+     * 返回值: int,周天:1,周一:2,周二:3,周三:4,周四:5,周五:6,周六:7
      */
     public int getDayOfWeek() {
-        return mCalendar.get(Calendar.DAY_OF_WEEK) - 1;
+        return mCalendar.get(Calendar.DAY_OF_WEEK);
     }
 }

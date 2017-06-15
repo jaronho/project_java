@@ -77,8 +77,7 @@ public abstract class QuickCalendarListener {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                long timeStamp = getTimeStamp();
-                mQuickCalendar.setTime(timeStamp > 0 ? timeStamp : System.currentTimeMillis());
+                mQuickCalendar.setTime(getTimeStamp());
                 int currentMinute = mQuickCalendar.getMinute();
                 int currentHour = mQuickCalendar.getHour();
                 int currentDay = mQuickCalendar.getDay();
