@@ -96,7 +96,7 @@ public class CrashTracker implements UncaughtExceptionHandler {
 		mToastTips = (null == toastTips) ? "" : toastTips;
 		mHandler = handler;
 		Thread.setDefaultUncaughtExceptionHandler(this);	// 设置程序的默认处理器
-		Log.d(TAG, "filePath: " + mFilePath + ", toastTips: " + toastTips);
+		Log.d(TAG, "file path: " + mFilePath + ", toast tips: " + toastTips);
 	}
 
 	/**
@@ -178,6 +178,7 @@ public class CrashTracker implements UncaughtExceptionHandler {
 	 * 返回值: 无
 	 */
 	private void collectDeviceInfo() {
+		String devicdInfo = "";
 		try {
 			PackageManager pm = mContext.getPackageManager();
 			PackageInfo pi = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_ACTIVITIES);
@@ -186,10 +187,11 @@ public class CrashTracker implements UncaughtExceptionHandler {
 				String versionCode = String.valueOf(pi.versionCode);
 				mInfos.put("version_name", versionName);
 				mInfos.put("version_code", versionCode);
-				Log.d(TAG, "version_name: " + versionName);
-				Log.d(TAG, "version_code: " + versionCode);
+				devicdInfo += "\nversion_name=" + versionName;
+				devicdInfo += "\nversion_code=" + versionCode;
 			}
 		} catch (NameNotFoundException e) {
+			Log.d(TAG, "information ==========>>>>>" + devicdInfo + "\n<<<<<==============================");
 			Log.e(TAG, "an error occured when collect package info", e);
 		}
 		Field[] fields = Build.class.getDeclaredFields();
@@ -199,8 +201,9 @@ public class CrashTracker implements UncaughtExceptionHandler {
 				String name = field.getName();
 				String value = field.get(null).toString();
 				mInfos.put(name, value);
-				Log.d(TAG, name + ": " + value);
+				devicdInfo += "\n" + name + "=" + value;
 			} catch (Exception e) {
+				Log.d(TAG, "information ==========>>>>>" + devicdInfo + "\n<<<<<==============================");
 				Log.e(TAG, "an error occured when collect crash info", e);
 			}
 		}
@@ -222,13 +225,9 @@ public class CrashTracker implements UncaughtExceptionHandler {
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
 		ex.printStackTrace(printWriter);
-		Throwable cause = ex.getCause();
-		while (null != cause) {
-			cause.printStackTrace(printWriter);
-			cause = cause.getCause();
-		}
 		printWriter.close();
 		stringBuilder.append(stringWriter.toString());
+		String crashInfo = "";
 		String filename = "";
 		try {
 			if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -237,12 +236,15 @@ public class CrashTracker implements UncaughtExceptionHandler {
 					String date = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.getDefault()).format(new Date());
 					filename = mFilePrefix + "-" + date + "-" + System.currentTimeMillis() + ".log";
 					FileOutputStream fos = new FileOutputStream(mFilePath + filename);
-					fos.write(stringBuilder.toString().getBytes());
+					crashInfo = stringBuilder.toString();
+					fos.write(crashInfo.getBytes());
 					fos.close();
-					Log.d(TAG, "filename: " + filename);
+					Log.d(TAG, "information ==========>>>>>\n" + crashInfo + "<<<<<==============================");
+					Log.d(TAG, "crash filename: " + filename);
 				}
 			}
 		} catch (Exception e) {
+			Log.d(TAG, "information ==========>>>>>\n" + crashInfo + "\n<<<<<==============================");
 			Log.e(TAG, "an error occured while writting file...", e);
 		}
 		if (null != mHandler) {
