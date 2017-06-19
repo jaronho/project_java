@@ -244,7 +244,7 @@ public class CrashTracker implements UncaughtExceptionHandler {
 				}
 			}
 		} catch (Exception e) {
-			Log.d(TAG, "information ==========>>>>>\n" + crashInfo + "\n<<<<<==============================");
+			Log.d(TAG, "information ==========>>>>>\n" + crashInfo + "<<<<<==============================");
 			Log.e(TAG, "an error occured while writting file...", e);
 		}
 		if (null != mHandler) {
