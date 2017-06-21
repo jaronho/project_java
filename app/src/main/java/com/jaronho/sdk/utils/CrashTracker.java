@@ -51,7 +51,7 @@ public class CrashTracker implements UncaughtExceptionHandler {
 	}
 
 	/**
-	 * 功  能: 构造函数,声明为私有保证只有一个CrashHandle实例
+	 * 功  能: 构造函数,声明为私有保证只有一个CrashTracker实例
 	 * 参  数: 无
 	 * 返回值: 无
 	 */
@@ -83,6 +83,9 @@ public class CrashTracker implements UncaughtExceptionHandler {
 	 * 返回值: 无
 	 */
 	public void run(Context context, String filePath, String filePrefix, String toastTips, Handler handler) {
+		if (null != mContext) {
+			throw new AssertionError("crash tracker is in running");
+		}
 		mContext = context;
 		mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();	// 获取系统默认的UncaughtException处理器
 		if (null == filePath || filePath.isEmpty()) {
