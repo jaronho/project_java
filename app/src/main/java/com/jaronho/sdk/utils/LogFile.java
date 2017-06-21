@@ -135,11 +135,10 @@ public class LogFile {
 
 	/**
 	 * 功  能: 记录
-	 * 参  数: dateString - 日期字符串
-	 * 		   text - 日志信息
+	 * 参  数: text - 日志信息
 	 * 返回值: 无
 	 */
-	public void record(String dateString, String text) {
+	public void record(String text) {
 		if (!mIsThreadRunning) {
 			mIsThreadRunning = true;
 			mThread.start();
@@ -152,17 +151,18 @@ public class LogFile {
 				queue = new ConcurrentLinkedQueue<>();
 				mLogMap.put(mFileFullPath, queue);
 			}
-			queue.add("[" + dateString + "] " + text);
+			queue.add(text);
 		}
 	}
 
 	/**
-	 * 功  能: 记录
+	 * 功  能: 记录,携带日期
 	 * 参  数: text - 日志信息
 	 * 返回值: 无
 	 */
-	public void record(String text) {
-		record(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()), text);
+	public void recordWithDate(String text) {
+		String dateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+		record("[" + dateString + "] " + text);
 	}
 
 	/**
