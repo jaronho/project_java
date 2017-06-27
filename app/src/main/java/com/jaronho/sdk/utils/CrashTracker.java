@@ -236,8 +236,8 @@ public class CrashTracker implements UncaughtExceptionHandler {
 			if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 				File dir = new File(mFilePath);
 				if (dir.exists() || dir.mkdirs()) {
-					String date = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.getDefault()).format(new Date());
-					filename = mFilePrefix + "-" + date + "-" + System.currentTimeMillis() + ".log";
+					String date = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS", Locale.getDefault()).format(new Date());
+					filename = mFilePrefix + "-" + date + ".log";
 					FileOutputStream fos = new FileOutputStream(mFilePath + filename);
 					crashInfo = stringBuilder.toString();
 					fos.write(crashInfo.getBytes());

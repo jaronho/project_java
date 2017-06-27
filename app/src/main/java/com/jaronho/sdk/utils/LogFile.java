@@ -27,7 +27,7 @@ public class LogFile {
 	private static Thread mThread = new Thread(new Runnable() {
 		@Override
 		public void run() {
-			while (!mThread.isInterrupted() && !mLogMap.isEmpty()) {
+			while (!mThread.isInterrupted()) {
 				Set<Map.Entry<String, ConcurrentLinkedQueue<String>>> entrySet = mLogMap.entrySet();
 				for (Map.Entry<String, ConcurrentLinkedQueue<String>> entry : entrySet) {
 					String fileFullPath = entry.getKey();
@@ -122,8 +122,8 @@ public class LogFile {
 				File dir = new File(filePath);
 				if (dir.exists() || dir.mkdirs()) {
 					if (null == filename || filename.isEmpty()) {
-						String date = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.getDefault()).format(new Date());
-						filename = filePrefix + "-" + date + "-" + System.currentTimeMillis() + ".log";
+						String date = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS", Locale.getDefault()).format(new Date());
+						filename = filePrefix + "-" + date + ".log";
 					}
 					mFileFullPath = filePath + filename;
 					mFileMaxSize = fileMaxSize > 0 ? fileMaxSize : FILE_MAX_SIZE;
