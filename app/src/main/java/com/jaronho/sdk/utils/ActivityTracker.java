@@ -6,6 +6,9 @@ import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.Context;
 import android.os.Bundle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Author:  Administrator
  * Date:    2017/5/8
@@ -15,6 +18,7 @@ import android.os.Bundle;
 public class ActivityTracker implements ActivityLifecycleCallbacks {
     private static ActivityTracker mInstance = null;
     private static Application mApp = null;
+    private static List<Activity> mActivityList = new ArrayList<>();
     private static int mActivityCount = 0;
     private static boolean mIsForground = false;
     private static Activity mTopActivity = null;
@@ -25,6 +29,9 @@ public class ActivityTracker implements ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityStarted(Activity activity) {
+        if (!mActivityList.equals(activity)) {
+            mActivityList.add(activity);
+        }
         ++mActivityCount;
     }
 
@@ -40,6 +47,9 @@ public class ActivityTracker implements ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityStopped(Activity activity) {
+        if (mActivityList.equals(activity)) {
+            mActivityList.remove(activity);
+        }
         --mActivityCount;
         if (0 == mActivityCount) {
             mIsForground = false;
@@ -85,6 +95,20 @@ public class ActivityTracker implements ActivityLifecycleCallbacks {
      */
     public static Context getApplicationContext() {
         return null != mApp ? mApp.getApplicationContext() : null;
+    }
+
+    /**
+     * 功  能: 结束活动
+     * 参  数: cls - 活动类名
+     * 返回值: 无
+     */
+    public static void finishActivity(Class<? extends Activity> cls) {
+        for (int i = 0, len = mActivityList.size(); i < len; ++i) {
+            if (mActivityList.get(i).getClass().equals(cls)) {
+                mActivityList.get(i).finish();
+                return;
+            }
+        }
     }
 
     /**
