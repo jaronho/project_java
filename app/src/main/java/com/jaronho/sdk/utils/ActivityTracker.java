@@ -25,13 +25,13 @@ public class ActivityTracker implements ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        if (!mActivityList.equals(activity)) {
+            mActivityList.add(activity);
+        }
     }
 
     @Override
     public void onActivityStarted(Activity activity) {
-        if (!mActivityList.equals(activity)) {
-            mActivityList.add(activity);
-        }
         ++mActivityCount;
     }
 
@@ -47,9 +47,6 @@ public class ActivityTracker implements ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityStopped(Activity activity) {
-        if (mActivityList.equals(activity)) {
-            mActivityList.remove(activity);
-        }
         --mActivityCount;
         if (0 == mActivityCount) {
             mIsForground = false;
@@ -62,6 +59,9 @@ public class ActivityTracker implements ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityDestroyed(Activity activity) {
+        if (mActivityList.equals(activity)) {
+            mActivityList.remove(activity);
+        }
     }
 
     /**
@@ -104,8 +104,9 @@ public class ActivityTracker implements ActivityLifecycleCallbacks {
      */
     public static void finishActivity(Class<? extends Activity> cls) {
         for (int i = 0, len = mActivityList.size(); i < len; ++i) {
-            if (mActivityList.get(i).getClass().equals(cls)) {
-                mActivityList.get(i).finish();
+            Activity activity = mActivityList.get(i);
+            if (null != activity && activity.getClass().equals(cls)) {
+                activity.finish();
                 return;
             }
         }
